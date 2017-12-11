@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="5dp"
+    android:orientation="vertical"
+    android:weightSum="2">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:orientation="horizontal"
+        android:weightSum="3.5">
+
+        <TextView
+            android:textColor="@color/black"
+            android:id="@+id/bs_transaction_name"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.5"
+            android:gravity="center_vertical"
+            android:textSize="12sp" />
+
+        <TextView
+            android:textColor="@color/black"
+            android:id="@+id/bs_first_amount"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.8"
+            android:gravity="center_vertical|end"
+            android:textSize="12sp" />
+
+        <TextView
+            android:textColor="@color/black"
+            android:id="@+id/bs_second_amount"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.2"
+            android:paddingRight="15dp"
+            android:gravity="center_vertical|end"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+</LinearLayout>
