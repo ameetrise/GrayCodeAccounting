@@ -1,6 +1,7 @@
 package com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.Activities;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.view.GravityCompat;
@@ -17,20 +18,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.Adapters.ExpNavAdapter;
+import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.Adapters.ImageTextAdapter;
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.GenericMethods;
-import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.Models.InvoicesModel;
-import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.SupportClasses.ApiService;
+import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.Models.ImageTextModel;
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.SupportClasses.Pref;
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.SupportClasses.ProjectStrings;
-import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.SupportClasses.Retroclient;
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.fragment.HomeFragment;
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.navigationdrawer.data.Constant;
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.navigationdrawer.NavMenuAdapter;
@@ -45,11 +45,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements NavMenuAdapter.MenuItemClickListener {
 
@@ -65,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements NavMenuAdapter.Me
     ExpandableListView company_list;
     String currentDate;
     ExpNavAdapter adapter;
+    ProjectStrings strings;
     List<String> listDataHeader;
     List<String> listChild = new ArrayList<>();
     HashMap<String, List<String>> listDataChild;
@@ -75,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements NavMenuAdapter.Me
         setContentView(R.layout.main_activity);
         drawer = findViewById(R.id.main_layout);
         branchId = "1";
+        strings = new ProjectStrings();
         companyId = new Pref(this).getCompanyid();
         currentDate = new GenericMethods().getCurrentDate();
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -87,11 +85,8 @@ public class MainActivity extends AppCompatActivity implements NavMenuAdapter.Me
         tv_nav_company_address = nav_header.findViewById(R.id.nav_company_address);
         company_list = findViewById(R.id.nav_company_list);
 
-        prepareListData();
-
-        adapter = new ExpNavAdapter(MainActivity.this, listDataHeader, listDataChild);
-        company_list.setAdapter(adapter);
-
+        prepareListData(pref.getSelectedcompany());
+        setExpAdapter();
 
         nav_company_logo = nav_header.findViewById(R.id.company_logo);
         tv_nav_company_address.setText(String.valueOf(pref.getCompanyaddress()));
@@ -143,39 +138,43 @@ public class MainActivity extends AppCompatActivity implements NavMenuAdapter.Me
 
     @Override
     public void onMenuItemClick(String itemString) {
-        if (itemString.equals("Sales")) {
-            //getAllSales();
-        } else if (itemString.equals("Purchase")) {
-            startActivity(new Intent(this, Purchase.class));
-        } else if (itemString.equals("Contacts")) {
+        if (itemString.equals(strings.getSales())) {
 
+        } else if (itemString.equals(strings.getPurchase())) {
+            startActivity(new Intent(this, Purchase.class));
+        } else if (itemString.equals(strings.getContacts())) {
             startActivity(new Intent(this, LoginActivity.class));
 
-
-        } else if (itemString.equals("Trial Balance")) {
+        } else if (itemString.equals(strings.getTrialBalance())) {
             startActivity(new Intent(this, TrialBalance.class));
-        } else if (itemString.equals("Home")) {
+        } else if (itemString.equals(strings.getHome())) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.main_content, new HomeFragment())
                     .commit();
-        } else if (itemString.equals("Balance Sheet")) {
+        } else if (itemString.equals(strings.getBalanceSheet())) {
             startActivity(new Intent(this, BalanceSheet.class));
-        } else if (itemString.equals("Profit and Loss")) {
+        } else if (itemString.equals(strings.getProfitandloss())) {
             startActivity(new Intent(this, ProfitAndLoss.class));
-        } else if (itemString.equals("About us")) {
+        } else if (itemString.equals(strings.getAboutus())) {
             Intent httpIntent = new Intent(Intent.ACTION_VIEW);
             httpIntent.setData(Uri.parse("http://www.graycode.com.np"));
             startActivity(httpIntent);
+        } else if (itemString.equals(strings.getContactus())) {
+            ArrayList<ImageTextModel> branchlist = new ArrayList<>();
+            branchlist.add(new ImageTextModel("Phone", R.drawable.phone));
+            branchlist.add(new ImageTextModel("Email", R.drawable.email));
+            branchlist.add(new ImageTextModel("SMS", R.drawable.sms));
+            showContactUsAlert(branchlist);
         }
-
         if (drawer != null) {
             drawer.closeDrawer(GravityCompat.START);
         }
     }
 
+
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.main_layout);
+        DrawerLayout drawer = findViewById(R.id.main_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -183,25 +182,22 @@ public class MainActivity extends AppCompatActivity implements NavMenuAdapter.Me
         }
     }
 
-    public void showAlert(ArrayList<String> itemlist) {
-
+    public void showContactUsAlert(ArrayList<ImageTextModel> itemlist) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.custom_alert_list, null);
         ListView alertList = dialogView.findViewById(R.id.alertlist);
 
-        ArrayAdapter<String> itemsAdapter =
-                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, itemlist);
+        ListAdapter itemsAdapter = new ImageTextAdapter(MainActivity.this, itemlist);
         alertList.setAdapter(itemsAdapter);
 
         dialogBuilder.setView(dialogView);
         final AlertDialog alertDialog = dialogBuilder.create();
         alertDialog.show();
-
         alertList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(MainActivity.this, "Branch " + String.valueOf(i + 1) + " selected", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, String.valueOf(i + 1) + " selected", Toast.LENGTH_SHORT).show();
                 alertDialog.dismiss();
             }
         });
@@ -209,42 +205,20 @@ public class MainActivity extends AppCompatActivity implements NavMenuAdapter.Me
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        ArrayList<String> branchlist = new ArrayList<>();
-        branchlist.add("Branch 1");
-        branchlist.add("Branch 2");
-        branchlist.add("Branch 3");
+
         int id = item.getItemId();
         if (id == android.R.id.home) {
             drawer.openDrawer(GravityCompat.START);
             return true;
         }
         if (id == R.id.action_branches) {
-            showAlert(branchlist);
+
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public void getAllSales() {
-        ApiService api = Retroclient.getApiService();
-        Call<List<InvoicesModel>> call = api.getInvoices(companyId, branchId, "all", "upto", "", currentDate);
-        call.enqueue(new Callback<List<InvoicesModel>>() {
-            @Override
-            public void onResponse(Call<List<InvoicesModel>> call, final Response<List<InvoicesModel>> response) {
-                if (response.isSuccessful()) {
-                    startActivity(new Intent(MainActivity.this, Sales.class).putExtra("data", new Gson().toJson(response.body())).putExtra("source", new ProjectStrings().getSales()));
-
-                } else Log.d(TAG, "datafetch is failed");
-            }
-
-            @Override
-            public void onFailure(Call<List<InvoicesModel>> call, Throwable t) {
-                Log.d(TAG, "datafetch is " + t);
-            }
-        });
-    }
-
-    private void prepareListData() {
+    public void prepareListData(String header) {
         listDataHeader = new ArrayList<>();
         listDataChild = new HashMap<>();
         ArrayList<String> arrayList;
@@ -253,21 +227,12 @@ public class MainActivity extends AppCompatActivity implements NavMenuAdapter.Me
         Type type = new TypeToken<List<String>>() {
         }.getType();
         arrayList = gson.fromJson(data, type);
-
         listChild.addAll(arrayList);
-        listDataHeader.add("My Companies");
+        listDataHeader.add(header);
         listDataChild.put(listDataHeader.get(0), listChild);
     }
-
-    public static String random() {
-        Random generator = new Random();
-        StringBuilder randomStringBuilder = new StringBuilder();
-        int randomLength = generator.nextInt(4);
-        char tempChar;
-        for (int i = 0; i < randomLength; i++) {
-            tempChar = (char) (generator.nextInt(96) + 32);
-            randomStringBuilder.append(tempChar);
-        }
-        return randomStringBuilder.toString();
+    public void setExpAdapter(){
+        adapter = new ExpNavAdapter(MainActivity.this, listDataHeader, listDataChild);
+        company_list.setAdapter(adapter);
     }
 }

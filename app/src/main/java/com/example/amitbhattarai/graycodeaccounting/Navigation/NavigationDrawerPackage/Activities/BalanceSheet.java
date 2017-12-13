@@ -52,17 +52,6 @@ public class BalanceSheet extends AppCompatActivity {
         date = findViewById(R.id.balance_sheet_date);
         company_name.setText(pref.getCompanyname());
         date.setText("Balance Sheet as on: " + (String.valueOf(gm.getCurrentDate())));
-        ArrayList<String> items = new ArrayList<>();
-        items.add("a");
-        items.add("a");
-        items.add("a");
-        items.add("a");
-        items.add("a");
-        items.add("a");
-        items.add("a");
-        items.add("a");
-        items.add("a");
-
         list_assets.setAdapter(adapter_liabilities);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav);

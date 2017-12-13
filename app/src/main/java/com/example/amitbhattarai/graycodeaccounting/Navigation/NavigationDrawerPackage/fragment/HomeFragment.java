@@ -58,7 +58,7 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragmenthome, container, false);
-        pd = new ProgressDialog(getContext());
+        pd = new ProgressDialog(getContext(),R.style.CustomDialogTheme);
         strings = new ProjectStrings();
         pd.show();
         pref = new Pref(getContext());

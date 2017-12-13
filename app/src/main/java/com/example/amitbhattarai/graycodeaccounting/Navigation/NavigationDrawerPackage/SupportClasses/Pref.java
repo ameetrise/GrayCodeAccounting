@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 public class Pref {
     ProjectStrings strings;
     SharedPreferences pref;
+    public static final String SELECTEDCOMPANY = "selected_company";
     public static final String COMPANYID = "company_id";
     public static final String isFIRSTLOGIN = "isFirstLogin";
     public static final String COMPANYNAME = "company_name";
@@ -56,6 +57,11 @@ public class Pref {
     public String getCompanyList() {
         String companylist = getSavedValue(COMPANIES);
         return companylist;
+    }
+
+    public String getSelectedcompany() {
+        String sc = getSavedValue(SELECTEDCOMPANY);
+        return sc;
     }
 
 

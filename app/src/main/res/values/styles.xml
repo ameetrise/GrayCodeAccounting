@@ -164,6 +164,10 @@
         <item name="android:layout_height">match_parent</item>
     </style>
 
+    <style name="CustomDialogTheme" parent="@android:style/Theme.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
 </resources>
 
 

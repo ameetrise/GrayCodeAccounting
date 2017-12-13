@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,10 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -23,7 +22,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.Models.InvoicesModel;
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.SupportClasses.Pref;
 import com.example.amitbhattarai.graycodeaccounting.R;
 import com.google.gson.Gson;
@@ -53,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         pref = new Pref(this);
         companyName = findViewById(R.id.activity_login_company);
-        sign_in= findViewById(R.id.activity_login_signin_button);
+        sign_in = findViewById(R.id.activity_login_signin_button);
         forgot_password = findViewById(R.id.activity_login_forgot_password);
         username = findViewById(R.id.activity_login_username);
         ArrayList<String> list = new ArrayList<>();
@@ -77,12 +75,6 @@ public class LoginActivity extends AppCompatActivity {
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
-
-    private void buttonClicked() {
-
-        Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show();
-    }
-
 
     @Override
     public boolean onNavigateUp() {
@@ -158,12 +150,13 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (passwordView.getText().toString().equals(null) || passwordView.getText().toString().equals("")) {
                     passwordView.setError("Password required");
-                }else {
+                } else {
                     companies = new Gson().fromJson(pref.getCompanyList(), new TypeToken<List<String>>() {
                     }.getType());
                     companies.add(companyName.getText().toString());
                     pref.saveString(pref.COMPANIES, new Gson().toJson(companies));
-                    finish();
+                    pref.saveString(pref.SELECTEDCOMPANY, companyName.getText().toString());
+                    startActivity(new Intent(LoginActivity.this,MainActivity.class));
                 }
             }
         });

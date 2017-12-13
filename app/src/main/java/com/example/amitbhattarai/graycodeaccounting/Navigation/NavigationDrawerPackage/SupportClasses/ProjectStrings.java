@@ -17,6 +17,92 @@ public class ProjectStrings {
     String purchase = "Purchase";
     String branchId = "1";
     String companyId = "1";
+
+    public String getHome() {
+        return home;
+    }
+
+    public void setHome(String home) {
+        this.home = home;
+    }
+
+    String home = "Home";
+
+    public String getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(String contacts) {
+        this.contacts = contacts;
+    }
+
+    public String getBalanceSheet() {
+        return balanceSheet;
+    }
+
+    public void setBalanceSheet(String balanceSheet) {
+        this.balanceSheet = balanceSheet;
+    }
+
+    public String getTrialBalance() {
+        return trialBalance;
+    }
+
+    public void setTrialBalance(String trialBalance) {
+        this.trialBalance = trialBalance;
+    }
+
+    public String getProfitandloss() {
+        return profitandloss;
+    }
+
+    public void setProfitandloss(String profitandloss) {
+        this.profitandloss = profitandloss;
+    }
+
+    public String getAboutus() {
+        return aboutus;
+    }
+
+    public void setAboutus(String aboutus) {
+        this.aboutus = aboutus;
+    }
+
+    public String getContactus() {
+        return contactus;
+    }
+
+    public void setContactus(String contactus) {
+        this.contactus = contactus;
+    }
+
+    public String getReports() {
+        return reports;
+    }
+
+    public void setReports(String reports) {
+        this.reports = reports;
+    }
+
+    public Pref getPref() {
+        return pref;
+    }
+
+    public void setPref(Pref pref) {
+        this.pref = pref;
+    }
+
+    public ArrayList<String> getBranchlist() {
+        return branchlist;
+    }
+
+    String contacts = "Contacts";
+    String balanceSheet = "Balance Sheet";
+    String trialBalance = "Trial Balance";
+    String profitandloss = "Profit and Loss";
+    String aboutus = "About us";
+    String contactus = "Contact us";
+    String reports = "Reports";
     Pref pref;
     public String getCompanyId() {
         String cid= pref.getCompanyid();
