@@ -1,6 +1,7 @@
 package com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.SupportClasses;
 
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.Models.CompanyDetails;
+import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.Models.ContactsModel;
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.Models.FinancialReports;
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.Models.InvoicesModel;
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.Models.LedgerCashAndBank;
@@ -31,6 +32,9 @@ public interface ApiService {
 
     @GET("Dashboard/GetLedgerBalanceCashAndBank/{companyId}/{branchId}")
     Call<LedgerCashAndBank> getgetCashandBank(@Path("companyId") String companyId,@Path("branchId") String branchid);
+
+    @GET("Associate/list/{pageNo}/{pageSize}")
+    Call<ContactsModel> getContactList(@Path("pageNo") String pageNo, @Path("pageSize") String pageSize);
 
     @FormUrlEncoded
     @POST("Sales/GetInvoicesByCriteria")

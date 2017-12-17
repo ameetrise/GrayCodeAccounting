@@ -27,23 +27,3 @@ public class Retroclient {
         return getRetrofitInstance().create(ApiService.class);
     }
 }
-
-//124.41.193.135:85
-
-//    public void getJson() {
-//        ApiService api = Retroclient.getApiService();
-//        Call<String> call = api.getNoticeJson("1", "20");
-//        call.enqueue(new Callback<String>() {
-//            @Override
-//            public void onResponse(Call<String> call, Response<String> response) {
-//                if (response.isSuccessful()) {
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<String> call, Throwable t) {
-//            }
-//        });
-//    }
-//}

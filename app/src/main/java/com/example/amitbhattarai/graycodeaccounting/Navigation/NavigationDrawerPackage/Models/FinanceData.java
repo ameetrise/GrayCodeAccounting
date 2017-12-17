@@ -8,6 +8,13 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class FinanceData {
+    public FinanceData(String accountChartName, Long groupOrLedger, String code, String codeString, Double amount) {
+        this.accountChartName = accountChartName;
+        this.groupOrLedger = groupOrLedger;
+        this.code = code;
+        this.codeString = codeString;
+        this.amount = amount;
+    }
 
     @SerializedName("AccountChartName")
     @Expose

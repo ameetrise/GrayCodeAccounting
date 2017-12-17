@@ -9,11 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.Activities.InvoiceDetails;
+import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.Activities.MainActivity;
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.Activities.Sales;
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.GenericMethods;
+import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.Models.CashAndBankData;
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.Models.CompanyDetails;
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.Models.CompanyDetailsData;
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.Models.CustomersAndSuppliersData;
@@ -58,12 +61,12 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragmenthome, container, false);
-        pd = new ProgressDialog(getContext(),R.style.CustomDialogTheme);
+        pd = new ProgressDialog(getContext(), R.style.CustomDialogTheme);
         strings = new ProjectStrings();
         pd.show();
         pref = new Pref(getContext());
-        companyId = pref.getCompanyid();
-        branchId = "1";
+        companyId = strings.getCompanyId();
+        branchId = strings.getBranchId();
         genericMethods = new GenericMethods();
         Log.d(TAG, "onCreateView: GMMMMMM " + genericMethods.getCurrentDate());
         currentDate = genericMethods.getCurrentDate();
@@ -104,20 +107,22 @@ public class HomeFragment extends Fragment {
         getTodaysSales(paid, unpaid, total, salescount, todaysSalesPanel);
         getTodaysPurchase(purchsepaid, purchaseunpaid, purcahsetotal, purchasecount, todaysPurchasePanel);
         if (pref.getIsFIRSTLOGIN().equals(strings.getEmpty())) {
-            Log.d(TAG, "First");
+            Log.d(TAG, "assFirst" + pref.getIsFIRSTLOGIN() + " " + strings.getEmpty());
             getCompanyDetails();
-        } else Log.d(TAG, "Not First");
+        } else Log.d(TAG, "assFirst No");
         return view;
     }
 
     public void getCompanyDetails() {
         ApiService api = Retroclient.getApiService();
-        Call<CompanyDetails> call = api.getCompanyDetails("3");
+        Log.d(TAG, "getCompanyDetailss: " + companyId);
+        Call<CompanyDetails> call = api.getCompanyDetails(companyId);
         call.enqueue(new Callback<CompanyDetails>() {
             @Override
             public void onResponse(Call<CompanyDetails> call, Response<CompanyDetails> response) {
                 if (response.isSuccessful()) {
                     if (response.body().getCompanyDetailsData() != null) {
+                        Log.d(TAG, "onResponseasd: ");
                         CompanyDetailsData data = response.body().getCompanyDetailsData();
                         pref.saveString(pref.COMPANYID, String.valueOf(data.getCompanyId()));
                         pref.saveString(pref.COMPANYNAME, String.valueOf(data.getName()));
@@ -127,7 +132,7 @@ public class HomeFragment extends Fragment {
                         pref.saveString(pref.COMPANYLOGO, String.valueOf(data.getLogo()));
                         pref.saveString(pref.COMPANYSTATE, String.valueOf(data.getState()));
                         pref.saveString(pref.COMPANYCOUNTRY, String.valueOf(data.getCountry()));
-                        pref.saveString(pref.COMPANYADDRESS, String.valueOf(data.getAddress1() + " " + data.getAddress2()));
+                        pref.saveString(pref.COMPANYADDRESS, String.valueOf(data.getAddress1()));
                         pref.saveString(pref.COMPANYEMAIL, String.valueOf(data.getEmail()));
                         pref.saveString(pref.COMPANYFACINGEMAIL, String.valueOf(data.getCustomerFacingEmail()));
                         pref.saveString(pref.COMPANYPHONE, String.valueOf(data.getPhone()));
@@ -136,9 +141,14 @@ public class HomeFragment extends Fragment {
                         pref.saveString(pref.COMPANYTYPEID, String.valueOf(data.getCompanyTypeId()));
                         pref.saveString(pref.COMPANYCULTUREID, String.valueOf(data.getCultureId()));
                         pref.saveString(pref.isFIRSTLOGIN, "false");
-                    } else Log.d(TAG, "onResponse: response null");
+
+                        if (getContext() instanceof MainActivity) {
+                            ((MainActivity) getContext()).setCompanyDetails();
+                        }
+
+                    } else Log.d(TAG, "onResponseasd: response null");
                 } else {
-                    Log.d(TAG, "onResponse: Failed");
+                    Log.d(TAG, "onResponseasd: Failed");
                     pd.dismiss();
                 }
             }
@@ -151,20 +161,32 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    public void getCashAndBank(final TextView cashinhandTV, final TextView bankAcTV, final LinearLayout cashinHandlayout, final LinearLayout bankaclayout) {
+    public void getCashAndBank(final TextView cashinhandTV, final TextView bankAcTV, final LinearLayout cashinHandlayout,
+                               final LinearLayout bankaclayout) {
         ApiService api = Retroclient.getApiService();
         Call<LedgerCashAndBank> call = api.getgetCashandBank(companyId, branchId);
         call.enqueue(new Callback<LedgerCashAndBank>() {
             @Override
             public void onResponse(Call<LedgerCashAndBank> call, final Response<LedgerCashAndBank> response) {
                 if (response.isSuccessful()) {
+                    final List<CashAndBankData> cash = new ArrayList<>();
+                    final List<CashAndBankData> bank = new ArrayList<>();
                     Log.d(TAG, "onResponse: yestocheckss " + String.valueOf(new Gson().toJson(response.body())));
                     double totalAmount = 0;
                     long totalReceived = 0;
                     for (int i = 0; i < response.body().getData().size(); i++) {
                         totalAmount = totalAmount + response.body().getData().get(i).getAmount();
-                        //totalReceived=totalReceived+response.body().getData().get(i).get
                     }
+
+                    for (int i = 0; i < response.body().getData().size(); i++) {
+                        if (response.body().getData().get(i).getAccountChartType().equals("b")) {
+                            bank.add(response.body().getData().get(i));
+                        }
+                        if (response.body().getData().get(i).getAccountChartType().equals("c")) {
+                            cash.add(response.body().getData().get(i));
+                        }
+                    }
+
                     cashinhandTV.setText("NRs " + String.valueOf(totalAmount));
                     bankAcTV.setText("NRs " + String.valueOf(totalReceived));
                     Log.d(TAG, "Total Amount " + String.valueOf(totalAmount + " Total received ") + String.valueOf(totalReceived));
@@ -174,14 +196,14 @@ public class HomeFragment extends Fragment {
                         @Override
                         public void onClick(View view) {
                             Log.d(TAG, "onClicks: " + new Gson().toJson(response.body().getData()));
-                            startActivity(new Intent(getContext(), InvoiceDetails.class).putExtra("data", new Gson().toJson(response.body().getData())).putExtra("class", "Cash in Hand"));
+                            startActivity(new Intent(getContext(), InvoiceDetails.class).putExtra("data", new Gson().toJson(cash)).putExtra("class", "Cash in Hand"));
                         }
                     });
 
                     bankaclayout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            startActivity(new Intent(getContext(), InvoiceDetails.class).putExtra("data", new Gson().toJson(response.body().getData())).putExtra("class", "Bank A/C"));
+                            startActivity(new Intent(getContext(), InvoiceDetails.class).putExtra("data", new Gson().toJson(bank)).putExtra("class", "Bank A/C"));
                         }
                     });
 
@@ -199,7 +221,8 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    public void getCustomerAndSupplier(final TextView customersTv, final TextView suppliersTv, final LinearLayout customerslayout, final LinearLayout supplierslayout) {
+    public void getCustomerAndSupplier(final TextView customersTv, final TextView suppliersTv, final LinearLayout customerslayout,
+                                       final LinearLayout supplierslayout) {
         ApiService api = Retroclient.getApiService();
         Call<LedgerCustomersAndSuppliers> call = api.getCustomersAndSuppliers(companyId, branchId);
         call.enqueue(new Callback<LedgerCustomersAndSuppliers>() {

@@ -26,7 +26,7 @@ public class ImageTextAdapter extends ArrayAdapter<ImageTextModel> {
     String TAG = "cusan";
 
     public ImageTextAdapter(Context context, ArrayList<ImageTextModel> time) {
-        super(context, R.layout.custom_layout_for_invoice, time);
+        super(context, R.layout.imageandtext, time);
         this.context = context;
         this.bodyArrayList = time;
     }

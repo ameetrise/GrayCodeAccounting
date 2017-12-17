@@ -19,6 +19,18 @@ public class CashAndBankData {
     @SerializedName("VoucherDetailId")
     @Expose
     private Long voucherDetailId;
+
+    public String getAccountChartType() {
+        return AccountChartType;
+    }
+
+    public void setAccountChartType(String accountChartType) {
+        AccountChartType = accountChartType;
+    }
+
+    @SerializedName("AccountChartType")
+    @Expose
+    private String AccountChartType;
     @SerializedName("VoucherId")
     @Expose
     private Long voucherId;

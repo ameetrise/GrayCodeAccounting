@@ -37,7 +37,6 @@ public class InvoiceDetails extends AppCompatActivity {
         Type type = new TypeToken<List<CashAndBankData>>() {
         }.getType();
         list = gson.fromJson(data, type);
-        //list.add(new CustomersAndSuppliersData());
         Log.d("thistag", "onCreate: " + new Gson().toJson(list));
         Log.d("thistag", "onCreate: " +data);
 
@@ -46,7 +45,7 @@ public class InvoiceDetails extends AppCompatActivity {
         getSupportActionBar().setTitle("Accounts");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         prepareListData(list);
-        expListView = (ExpandableListView) findViewById(R.id.expandableDetailView);
+        expListView = findViewById(R.id.expandableDetailView);
 
         listAdapter = new CustomExpandableListAdapterInvoices(this, listDataHeader, listDataChild,fromclass);
         expListView.setAdapter(listAdapter);

@@ -5,6 +5,7 @@
     <color name="colorAccent">#a43d60</color>
 
     <color name="white">#FFF</color>
+    <color name="alter_white">#fdfdfd</color>
     <color name="whiteshade">#edebea</color>
     <color name="colorsubmenuclick">#ecede9</color>
     <color name="coloritemclick">#e5ece4</color>

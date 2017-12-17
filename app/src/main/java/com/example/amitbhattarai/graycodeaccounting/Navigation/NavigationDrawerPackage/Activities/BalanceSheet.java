@@ -18,32 +18,37 @@ import android.widget.Toast;
 
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.Adapters.BalanceSheetLiabilitiesListAdapter;
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.GenericMethods;
+import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.Models.FinanceData;
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.Models.FinancialReports;
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.SupportClasses.ApiService;
+import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.SupportClasses.NonScrollListView;
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.SupportClasses.Pref;
+import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.SupportClasses.ProjectStrings;
 import com.example.amitbhattarai.graycodeaccounting.Navigation.NavigationDrawerPackage.SupportClasses.Retroclient;
 import com.example.amitbhattarai.graycodeaccounting.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class BalanceSheet extends AppCompatActivity {
-    ListView list_liabilities;
-    ListView list_assets;
+    NonScrollListView list_liabilities;
+    NonScrollListView list_assets;
     ListAdapter adapter_liabilities;
     TextView company_name, date, liabilities_total;
-    int clickCount = 0;
     Pref pref;
     GenericMethods gm;
+    ProjectStrings strings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_balance_sheet);
         pref = new Pref(this);
+        strings= new ProjectStrings();
         gm = new GenericMethods();
         list_liabilities = findViewById(R.id.balance_sheet_liabilities_list);
         list_assets = findViewById(R.id.balance_sheet_assets_list);
@@ -71,23 +76,24 @@ public class BalanceSheet extends AppCompatActivity {
                         }
                     });
         }
-        getBalanceSheetData();
+        List<FinanceData> list= new ArrayList<>();
+
+        getBalanceSheetData(pref.getCompanyid(),strings.getBS(),strings.getFromdate(),gm.getCurrentDate());
     }
 
-    public void getBalanceSheetData() {
+    public void getBalanceSheetData(String companyId,String type,String fromDate,String toDate) {
         ApiService api = Retroclient.getApiService();
-        Call<FinancialReports> call = api.getFinanceReport("1", "BS", "2017-12-01", "2017-12-09");
+        Call<FinancialReports> call = api.getFinanceReport(companyId, type, fromDate,toDate);
         call.enqueue(new Callback<FinancialReports>() {
             @Override
             public void onResponse(Call<FinancialReports> call, Response<FinancialReports> response) {
                 if (response.isSuccessful()) {
-                    Log.d("andoidsa", "onResponse: Success BS ");
                     double totaoAmount = 0;
                     for (int i = 0; i < response.body().getData().size(); i++) {
                         totaoAmount = totaoAmount + response.body().getData().get(i).getAmount();
                     }
+
                     liabilities_total.setText(String.valueOf(totaoAmount));
-                    Log.d("totalcheck", "onResponse: " + String.valueOf(totaoAmount));
                     adapter_liabilities = new BalanceSheetLiabilitiesListAdapter(BalanceSheet.this, response.body().getData());
                     list_liabilities.setAdapter(adapter_liabilities);
                 } else Log.d("andoidsa", "onResponse: Failed BS");
@@ -99,38 +105,49 @@ public class BalanceSheet extends AppCompatActivity {
             }
         });
     }
-
+    int datecount=0;
+    String fromdate;
+    String todate;
     public void alertCalendar() {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.calendar_layout, null);
-        final DatePicker datePicker = dialogView.findViewById(R.id.datePicker);
-        Button pick = dialogView.findViewById(R.id.pickBtn);
+        final View dialogView = inflater.inflate(R.layout.calendar_layout, null);
+        dialogBuilder.setView(dialogView);
+        final AlertDialog alertDialog = dialogBuilder.create();
+        alertDialog.show();
+
         Button cancel = dialogView.findViewById(R.id.btnCanel);
-        if (clickCount == 0) {
-            Toast.makeText(BalanceSheet.this, "Select start Date", Toast.LENGTH_SHORT).show();
+        final Button pick = dialogView.findViewById(R.id.pickBtn);
+        if (datecount == 0) {
+            Toast.makeText(this, "Select from date.", Toast.LENGTH_SHORT).show();
+
+            pick.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    DatePicker datePicker = dialogView.findViewById(R.id.datePicker);
+                    fromdate = String.valueOf(datePicker.getYear()) + "-" + String.valueOf(datePicker.getMonth() + 1) + "-" + String.valueOf(datePicker.getDayOfMonth());
+                    Toast.makeText(BalanceSheet.this, "Select to date.", Toast.LENGTH_SHORT).show();
+                    pick.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            DatePicker datePicker = dialogView.findViewById(R.id.datePicker);
+                            todate = String.valueOf(datePicker.getYear()) + "-" + String.valueOf(datePicker.getMonth() + 1) + "-"
+                                    + String.valueOf(datePicker.getDayOfMonth());
+                            Log.d("yocheck", "onClick: "+"From date "+fromdate+" Todate "+todate);
+                            date.setText("Balane Sheet from "+fromdate+" to "+todate);
+                            getBalanceSheetData(pref.getCompanyid(),strings.getBS(),fromdate,todate);
+                            alertDialog.dismiss();
+                        }
+                    });
+                }
+            });
         }
+
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+                alertDialog.dismiss();
             }
         });
-        pick.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (clickCount == 0) {
-                    Toast.makeText(BalanceSheet.this, String.valueOf(datePicker.getYear() + " " + String.valueOf(datePicker.getMonth()) + " " + datePicker.getDayOfMonth()), Toast.LENGTH_SHORT).show();
-                    Toast.makeText(BalanceSheet.this, "Select end Date", Toast.LENGTH_SHORT).show();
-                    clickCount = clickCount + 1;
-                    alertCalendar();
-                } else {
-                    Toast.makeText(BalanceSheet.this, String.valueOf(datePicker.getYear() + " " + String.valueOf(datePicker.getMonth()) + " " + datePicker.getDayOfMonth()), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        dialogBuilder.setView(dialogView);
-        AlertDialog alertDialog = dialogBuilder.create();
-        alertDialog.show();
     }
 }

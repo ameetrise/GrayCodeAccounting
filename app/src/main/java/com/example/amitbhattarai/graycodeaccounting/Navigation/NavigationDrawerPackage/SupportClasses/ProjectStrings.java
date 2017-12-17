@@ -17,6 +17,55 @@ public class ProjectStrings {
     String purchase = "Purchase";
     String branchId = "1";
     String companyId = "1";
+    String fromdate = "2017-01-01";
+    String BS = "BS";
+    String TB = "TB";
+    String PL = "PL";
+    String ourmail = "info@graycode.com";
+    String balanceSheet = "Balance Sheet";
+    String trialBalance = "Trial Balance";
+    String profitandloss = "Profit and Loss";
+    String aboutus = "About us";
+    String contactus = "Contact us";
+    String reports = "Reports";
+    String contacts = "Contacts";
+    String home = "Home";
+    Pref pref;
+    String empty = "[]";
+
+    public String getFromdate() {
+        return fromdate;
+    }
+
+    public void setFromdate(String fromdate) {
+        this.fromdate = fromdate;
+    }
+
+    public String getBS() {
+        return BS;
+    }
+
+    public void setBS(String BS) {
+        this.BS = BS;
+    }
+
+    public String getTB() {
+        return TB;
+    }
+
+    public void setTB(String TB) {
+        this.TB = TB;
+    }
+
+    public String getPL() {
+        return PL;
+    }
+
+    public void setPL(String PL) {
+        this.PL = PL;
+    }
+
+
 
     public String getHome() {
         return home;
@@ -26,7 +75,7 @@ public class ProjectStrings {
         this.home = home;
     }
 
-    String home = "Home";
+
 
     public String getContacts() {
         return contacts;
@@ -96,17 +145,19 @@ public class ProjectStrings {
         return branchlist;
     }
 
-    String contacts = "Contacts";
-    String balanceSheet = "Balance Sheet";
-    String trialBalance = "Trial Balance";
-    String profitandloss = "Profit and Loss";
-    String aboutus = "About us";
-    String contactus = "Contact us";
-    String reports = "Reports";
-    Pref pref;
+
+
+    public String getOurmail() {
+        return ourmail;
+    }
+
+    public void setOurmail(String ourmail) {
+        this.ourmail = ourmail;
+    }
+
     public String getCompanyId() {
-        String cid= pref.getCompanyid();
-        return cid;
+
+        return companyId;
     }
 
     public void setCompanyId(String companyId) {
@@ -121,7 +172,7 @@ public class ProjectStrings {
         this.empty = empty;
     }
 
-    String empty = "[]";
+
 
     public void setBranchlist(ArrayList<String> branchlist) {
         this.branchlist = branchlist;

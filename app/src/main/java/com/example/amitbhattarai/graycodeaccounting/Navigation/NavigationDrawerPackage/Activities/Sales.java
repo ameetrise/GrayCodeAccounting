@@ -179,7 +179,7 @@ public class Sales extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String s) {
                 type_spinner.setText(strings.getAllinvoices());
-                filterList(s);
+                filterList(s.toLowerCase());
                 return false;
             }
         });
@@ -350,7 +350,7 @@ public class Sales extends AppCompatActivity {
         Log.d(TAG, "filterListtext: " + text);
         List<InvoicesModel> filteredList = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getAssociateName().contains(text)) {
+            if (list.get(i).getAssociateName().toLowerCase().contains(text)) {
                 filteredList.add(list.get(i));
             }
             salesadapter = new SalesAdapter(Sales.this, filteredList);

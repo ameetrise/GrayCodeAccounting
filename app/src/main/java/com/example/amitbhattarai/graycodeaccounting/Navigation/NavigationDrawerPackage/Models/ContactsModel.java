@@ -6,10 +6,10 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 /**
- * Created by amitbhattarai on 12/1/17.
+ * Created by amitbhattarai on 12/14/17.
  */
 
-public class FinancialReports {
+public class ContactsModel {
 
     @SerializedName("Code")
     @Expose
@@ -19,13 +19,7 @@ public class FinancialReports {
     private String message;
     @SerializedName("Data")
     @Expose
-    private List<FinanceData> data = null;
-
-    public FinancialReports(Long code, String message, List<FinanceData> data) {
-        this.code = code;
-        this.message = message;
-        this.data = data;
-    }
+    private List<ContactList> data = null;
 
     public Long getCode() {
         return code;
@@ -43,11 +37,11 @@ public class FinancialReports {
         this.message = message;
     }
 
-    public List<FinanceData> getData() {
+    public List<ContactList> getData() {
         return data;
     }
 
-    public void setData(List<FinanceData> data) {
+    public void setData(List<ContactList> data) {
         this.data = data;
     }
 

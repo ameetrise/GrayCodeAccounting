@@ -29,6 +29,7 @@ public class Constant {
 
         menu.add(new NavMenuModel(strings.getContactus(), R.drawable.contact_us));
         menu.add(new NavMenuModel(strings.getAboutus(), R.drawable.aboutus));
+        menu.add(new NavMenuModel("Login", R.drawable.aboutus));
         return menu;
     }
 }
